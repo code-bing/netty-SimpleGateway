@@ -1,0 +1,21 @@
+{
+  "server": {
+    "group1": [
+      "http://127.0.0.1:8080"
+    ],
+    "group2": [
+      "http://127.0.0.1:8088",
+      "http://127.0.0.1:8089"
+    ]
+  },
+  "route": [
+    {
+      "source": "/group1",
+      "target": "group1"
+    },
+    {
+      "source": "/group2",
+      "target": "group2"
+    }
+  ]
+}
