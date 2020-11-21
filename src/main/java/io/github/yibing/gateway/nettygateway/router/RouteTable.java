@@ -37,7 +37,7 @@ public class RouteTable {
         Gson gson = new Gson();
         JsonReader reader = null;
         try {
-            reader = new JsonReader(new FileReader("D:\\wangyibing\\netty-gateway\\src\\main\\resources\\route.json"));
+            reader = new JsonReader(new FileReader("D:\\gitHub项目\\netty-SimpleGateway\\src\\main\\resources\\route.json"));
             Map<String, Object> config = gson.fromJson(reader, Map.class);
             server = (Map<String, List<String>>) config.get("server");
             route = (List<Map<String, String>>) config.get("route");
@@ -52,7 +52,7 @@ public class RouteTable {
         try {
             for (Map<String, String> table : route) {
                 if (uri.indexOf(table.get("source")) == 0) {
-                    target = RoundRibbon.route(server, table.get("source"));
+                    target = RoundRibbon.route(server, table.get("target"));
                     break;
                 }
             }

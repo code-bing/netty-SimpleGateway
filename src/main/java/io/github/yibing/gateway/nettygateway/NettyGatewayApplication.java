@@ -1,6 +1,7 @@
 package io.github.yibing.gateway.nettygateway;
 
 import io.github.yibing.gateway.nettygateway.inbound.HttpInboundServer;
+import io.github.yibing.gateway.nettygateway.router.RouteTable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
@@ -21,6 +22,7 @@ public class NettyGatewayApplication implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
+        RouteTable.getInstance().initRoute();
         gatewayServer.run();
     }
 }

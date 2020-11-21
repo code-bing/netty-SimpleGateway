@@ -38,8 +38,12 @@ public class HttpInboundHandler extends ChannelInboundHandlerAdapter {
     public void channelRead(ChannelHandlerContext ctx, Object msg) {
         try {
             FullHttpRequest fullRequest = (FullHttpRequest) msg;
+            if(fullRequest.uri().equals("/favicon.ico")){
+                return;
+            }
             filter.filter(fullRequest, ctx);
             this.proxyServer = RouteTable.getInstance().getTargetUrl(fullRequest.uri());
+            logger.info("路由到的目标地址："+proxyServer);
             nettyHandler = new NettyOutboundHandler(proxyServer);
             nettyHandler.handle(fullRequest, ctx);
         } catch (Exception e) {

@@ -4,6 +4,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * 轮询算法
+ */
 public class RoundRibbon implements HttpEndpointRouter {
     // 当前路由的地址编号
     private static Map<String, Integer> routeFlag;
@@ -18,14 +21,14 @@ public class RoundRibbon implements HttpEndpointRouter {
     static String route(Map<String, List<String>> server, String source) {
         List<String> serverGroups = null;
         Integer gFlag = 0;
-        if (routeFlag.get("target") == null) {
+        if (routeFlag.get(source) == null) {
             routeFlag.put(source, gFlag);
         } else {
-            gFlag = routeFlag.get("target");
+            gFlag = routeFlag.get(source);
         }
         int newFlag = gFlag + 1;
         serverGroups = server.get(source);
-        if (newFlag > serverGroups.size()) {
+        if (newFlag >= serverGroups.size()) {
             routeFlag.put(source, 0);
         } else {
             routeFlag.put(source, newFlag);
