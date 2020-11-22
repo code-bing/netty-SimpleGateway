@@ -1,32 +1,36 @@
 package io.github.yibing.gateway.nettygateway.inbound;
 
-import io.github.yibing.gateway.nettygateway.filter.HttpRequestFilter;
-import io.github.yibing.gateway.nettygateway.filter.HttpRequestFilterImpl;
+import io.github.yibing.gateway.nettygateway.outbound.httpclient4.HttpOutboundHandler;
 import io.github.yibing.gateway.nettygateway.outbound.netty4.NettyOutboundHandler;
 import io.github.yibing.gateway.nettygateway.outbound.okhttp.OkhttpOutboundHandler;
 import io.github.yibing.gateway.nettygateway.router.RouteTable;
+import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.util.ReferenceCountUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
+@Component
+@Slf4j
+@ChannelHandler.Sharable
 public class HttpInboundHandler extends ChannelInboundHandlerAdapter {
 
-    private static Logger logger = LoggerFactory.getLogger(HttpInboundHandler.class);
+    //    private static Logger logger = LoggerFactory.getLogger(HttpInboundHandler.class);
     private String proxyServer;
     private OkhttpOutboundHandler handler;
     private NettyOutboundHandler nettyHandler;
-    private HttpRequestFilter filter;
+
+    @Autowired
+    private HttpOutboundHandler httpHandler;
 
     public HttpInboundHandler() {
-//        this.proxyServer = proxyServer;
-//        OkHttp客户端请求
-//        handler = new OkhttpOutboundHandler(this.proxyServer);
-        //netty 作为客户端请求
-//        nettyHandler = new NettyOutboundHandler(proxyServer);
-        filter = new HttpRequestFilterImpl();
+
     }
 
     @Override
@@ -36,16 +40,17 @@ public class HttpInboundHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) {
+        Lock lock = new ReentrantLock();
         try {
+            lock.lock();
             FullHttpRequest fullRequest = (FullHttpRequest) msg;
-            if(fullRequest.uri().equals("/favicon.ico")){
+            if (fullRequest.uri().equals("/favicon.ico")) {
                 return;
             }
-            filter.filter(fullRequest, ctx);
-            this.proxyServer = RouteTable.getInstance().getTargetUrl(fullRequest.uri());
-            logger.info("路由到的目标地址："+proxyServer);
-            nettyHandler = new NettyOutboundHandler(proxyServer);
-            nettyHandler.handle(fullRequest, ctx);
+            proxyServer = RouteTable.targetUrl;
+            log.info("路由到的目标地址：" + proxyServer);
+            httpHandler.handle(fullRequest, ctx);
+            lock.unlock();
         } catch (Exception e) {
             e.printStackTrace();
         } finally {

@@ -6,7 +6,6 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -20,9 +19,10 @@ public class RouteTable {
     private static List<Map<String, String>> route;
     // 后端服务地址列表
     private static Map<String, List<String>> server;
+    // 目标地址
+    public static String targetUrl;
 
     private RouteTable() {
-
     }
 
     private static class ROUTE {
@@ -59,7 +59,8 @@ public class RouteTable {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return target + uri;
+        targetUrl = target + uri;
+        return targetUrl;
     }
 
     public static void main(String[] args) {
