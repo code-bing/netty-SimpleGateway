@@ -19,7 +19,7 @@ public class RoundRibbon implements HttpEndpointRouter {
     }
 
     static String route(Map<String, List<String>> server, String source) {
-        List<String> serverGroups = null;
+        List<String> serverGroups = server.get(source);;
         Integer gFlag = 0;
         if (routeFlag.get(source) == null) {
             routeFlag.put(source, gFlag);
@@ -27,7 +27,6 @@ public class RoundRibbon implements HttpEndpointRouter {
             gFlag = routeFlag.get(source);
         }
         int newFlag = gFlag + 1;
-        serverGroups = server.get(source);
         if (newFlag >= serverGroups.size()) {
             routeFlag.put(source, 0);
         } else {

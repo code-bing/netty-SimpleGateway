@@ -21,7 +21,6 @@ import java.util.concurrent.locks.ReentrantLock;
 @ChannelHandler.Sharable
 public class HttpInboundHandler extends ChannelInboundHandlerAdapter {
 
-    //    private static Logger logger = LoggerFactory.getLogger(HttpInboundHandler.class);
     private String proxyServer;
     private OkhttpOutboundHandler handler;
     private NettyOutboundHandler nettyHandler;
@@ -47,8 +46,6 @@ public class HttpInboundHandler extends ChannelInboundHandlerAdapter {
             if (fullRequest.uri().equals("/favicon.ico")) {
                 return;
             }
-            proxyServer = RouteTable.targetUrl;
-            log.info("路由到的目标地址：" + proxyServer);
             httpHandler.handle(fullRequest, ctx);
             lock.unlock();
         } catch (Exception e) {
