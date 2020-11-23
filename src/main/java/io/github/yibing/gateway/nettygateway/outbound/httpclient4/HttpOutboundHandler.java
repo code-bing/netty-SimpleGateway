@@ -60,7 +60,6 @@ public class HttpOutboundHandler {
     }
 
     public void handle(final FullHttpRequest fullRequest, final ChannelHandlerContext ctx) {
-        RejectedExecutionHandler handler = new ThreadPoolExecutor.CallerRunsPolicy();//.DiscardPolicy();
         // 创建线程池
         proxyService = theadPoolUtil.getThreadPool();
         this.setBackendUrl(RouteTable.targetUrl);
@@ -80,6 +79,8 @@ public class HttpOutboundHandler {
                     handleResponse(inbound, ctx, endpointResponse);
                 } catch (Exception e) {
                     e.printStackTrace();
+                } finally {
+                    proxyService.shutdown();
                 }
             }
 
